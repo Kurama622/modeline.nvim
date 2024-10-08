@@ -218,9 +218,9 @@ function M.gitinfo()
           dict['head'] = coroutine.yield()
         end
         local parts = ''
-        for i = 1, 4 do
+        for i = 4, 1, -1 do
           if i == 1 or (type(dict[order[i]]) == 'number' and dict[order[i]] > 0) then
-            parts = ('%s %s'):format(parts, group_fmt('Git', alias[i], signs[i] .. dict[order[i]]))
+            parts = ('%s %s'):format(group_fmt('Git', alias[i], signs[i] .. dict[order[i]]), parts)
           end
         end
         pieces[idx] = parts
