@@ -5,24 +5,7 @@ local function stl_format(name, val)
   return ('%%#ModeLine%s#%s%%*'):format(name, val)
 end
 
-local function default()
-  local comps = {
-    p.mode(),
-    p.encoding(),
-    p.eol(),
-    [[%{(&modified&&&readonly?'%*':(&modified?'**':(&readonly?'%%':'--')))}- T%{tabpagenr()}  ]],
-    p.fileinfo(),
-    '   %P   (L%l,C%c)  ',
-    p.gitinfo(),
-    ' %=',
-    [[%{(bufname() !=# '' && &bt != 'terminal' ? '(' : '')}]],
-    p.filetype(),
-    p.diagnostic(),
-    [[%{(bufname() !=# '' && &bt != 'terminal' ? ')' : '')}]],
-    p.progress(),
-    p.lsp(),
-    '%=%=',
-  }
+local function default(comps)
   local e, pieces = {}, {}
   iter(ipairs(comps))
     :map(function(key, item)
@@ -42,7 +25,7 @@ local function default()
       end
     end)
     :totable()
-  return comps, e, pieces
+  return e, pieces
 end
 
 local function render(comps, events, pieces)
@@ -63,29 +46,52 @@ local function render(comps, events, pieces)
   end)
 end
 
-return {
-  setup = function()
-    local comps, events, pieces = default()
-    local stl_render = render(comps, events, pieces)
-    iter(vim.tbl_keys(events)):map(function(e)
-      local tmp = e
-      local pattern
-      if e:find('User') then
-        pattern = vim.split(e, '%s')[2]
-        tmp = 'User'
-      end
-      api.nvim_create_autocmd(tmp, {
-        pattern = pattern,
-        callback = function(args)
-          vim.schedule(function()
-            local ok, res = co.resume(stl_render, args)
-            if not ok then
-              vim.notify('[ModeLine] render failed ' .. res, vim.log.levels.ERROR)
-            end
-          end)
-        end,
-        desc = '[ModeLine] update',
-      })
-    end)
-  end,
-}
+local modeline = {}
+
+function modeline.setup(comps)
+  if comps == nil then
+    comps = {
+      p.mode(),
+      p.encoding(),
+      p.eol(),
+      p.filestatus(),
+      p.separator(),
+      p.fileinfo(),
+      p.separator(),
+      p.gitinfo(),
+      p.space(),
+      p.leftpar(),
+      p.filetype(),
+      p.diagnostic(),
+      p.rightpar(),
+      p.progress(),
+      p.lsp(),
+      p.space(),
+      p.pos(),
+    }
+  end
+  local events, pieces = default(comps)
+  local stl_render = render(comps, events, pieces)
+  iter(vim.tbl_keys(events)):map(function(e)
+    local tmp = e
+    local pattern
+    if e:find('User') then
+      pattern = vim.split(e, '%s')[2]
+      tmp = 'User'
+    end
+    api.nvim_create_autocmd(tmp, {
+      pattern = pattern,
+      callback = function(args)
+        vim.schedule(function()
+          local ok, res = co.resume(stl_render, args)
+          if not ok then
+            vim.notify('[ModeLine] render failed ' .. res, vim.log.levels.ERROR)
+          end
+        end)
+      end,
+      desc = '[ModeLine] update',
+    })
+  end)
+end
+
+return modeline

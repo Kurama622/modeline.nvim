@@ -2,7 +2,7 @@ local api, uv, lsp, diagnostic, M = vim.api, vim.uv, vim.lsp, vim.diagnostic, {}
 local fnamemodify = vim.fn.fnamemodify
 
 local function get_stl_bg()
-  return api.nvim_get_hl(0, { name = 'StatusLine' }).bg or 'back'
+  return api.nvim_get_hl(0, { name = 'StatusLine' }).bg
 end
 
 local stl_bg = get_stl_bg()
@@ -66,19 +66,42 @@ function M.mode()
     stl = function()
       local mode = api.nvim_get_mode().mode
       local m = alias[mode] or alias[string.sub(mode, 1, 1)] or 'UNK'
-      return m:sub(1, 3):upper()
+      return string.format(' %s', m:sub(1, 3):upper())
     end,
     name = 'mode',
-    default = 'NOR',
+    default = ' NOR',
     event = { 'ModeChanged' },
     attr = {
       bg = stl_bg,
-      fg = 'black',
+      fg = '#5f87af',
       bold = true,
     },
   }
 end
 
+function M.filestatus()
+  return {
+    stl = [[%{(&modified&&&readonly?'[RO+]':(&modified?' [+] ':(&readonly?'[RO] ':' [-] ')))}]],
+    name = 'filestatus',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+    },
+  }
+end
+
+function M.pos()
+  return {
+    stl = '   %P  (L%l,C%c) ',
+    name = 'pos',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+      fg = '#33e1df',
+      italic = true,
+    },
+  }
+end
 function M.fileinfo()
   return {
     stl = [[%{expand('%:~:.')}]],
@@ -86,7 +109,7 @@ function M.fileinfo()
     event = { 'BufEnter' },
     attr = {
       bold = true,
-      fg = 'black',
+      fg = 'lightblue',
       bg = stl_bg,
     },
   }
@@ -105,6 +128,7 @@ function M.filetype()
       return alias[ft] and alias[ft] or up .. ft:sub(2, #ft)
     end,
     event = { 'BufEnter' },
+    attr = stl_attr('Type'),
   }
 end
 
@@ -162,6 +186,7 @@ function M.lsp()
     end,
     name = 'Lsp',
     event = { 'LspProgress', 'LspAttach', 'LspDetach', 'BufEnter' },
+    attr = stl_attr('Keyword'),
   }
 end
 
@@ -169,7 +194,7 @@ function M.gitinfo()
   local alias = { 'Head', 'Add', 'Change', 'Delete' }
   for i = 2, 4 do
     local color = api.nvim_get_hl(0, { name = 'Diff' .. alias[i] })
-    api.nvim_set_hl(0, 'ModeLineGit' .. alias[i], { fg = color.bg, bg = stl_bg })
+    api.nvim_set_hl(0, 'ModeLineGit' .. alias[i], { fg = color.fg, bg = stl_bg })
   end
   return {
     stl = function()
@@ -258,4 +283,46 @@ function M.encoding()
   }
 end
 
+function M.separator()
+  return {
+    stl = ' ╱ ',
+    name = 'separator',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+      fg = 'gray',
+    },
+  }
+end
+
+function M.space()
+  return {
+    stl = ' %=',
+    name = 'space',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+    },
+  }
+end
+function M.leftpar()
+  return {
+    stl = [[%{(bufname() !=# '' && &bt != 'terminal' ? '(' : '')}]],
+    name = 'leftpar',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+    },
+  }
+end
+function M.rightpar()
+  return {
+    stl = [[%{(bufname() !=# '' && &bt != 'terminal' ? ')' : '')}]],
+    name = 'rightpar',
+    event = { 'BufEnter' },
+    attr = {
+      bg = stl_bg,
+    },
+  }
+end
 return M
