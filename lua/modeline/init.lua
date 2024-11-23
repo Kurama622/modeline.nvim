@@ -67,6 +67,7 @@ function modeline.setup(comps)
       p.progress(),
       p.lsp(),
       p.space(),
+      p.selected_chars(),
       p.pos(),
     }
   end

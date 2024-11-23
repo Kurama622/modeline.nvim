@@ -102,6 +102,27 @@ function M.pos()
     },
   }
 end
+
+function M.selected_chars()
+  return {
+    stl = function()
+      local mode = vim.fn.mode()
+      if mode == 'v' or mode == 'V' or mode == '\22' then
+        return string.format('%s', tostring(vim.fn.wordcount().visual_chars))
+      else
+        return ''
+      end
+    end,
+    name = 'selected_char',
+    event = { 'ModeChanged', 'CursorMoved' },
+    attr = {
+      bg = stl_bg,
+      fg = '#feefe1',
+      italic = true,
+    },
+  }
+end
+
 function M.fileinfo()
   return {
     stl = [[%{expand('%:~:.')}]],
