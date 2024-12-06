@@ -103,12 +103,26 @@ function M.pos()
   }
 end
 
-function M.selected_chars()
+local function visual_lines()
+  local line_v = vim.fn.getpos('v')[2]
+  local line_cur = vim.api.nvim_win_get_cursor(0)[1]
+  if line_cur > line_v then
+    return line_cur - line_v + 1
+  else
+    return line_v - line_cur + 1
+  end
+end
+
+function M.visual_selected()
   return {
     stl = function()
       local mode = vim.fn.mode()
-      if mode == 'v' or mode == 'V' or mode == '\22' then
-        return string.format('%s', tostring(vim.fn.wordcount().visual_chars))
+      if mode == 'v' or mode == 'V' or mode == '\x16' then
+        return string.format(
+          '%s,%s',
+          tostring(vim.fn.wordcount().visual_chars),
+          tostring(visual_lines())
+        )
       else
         return ''
       end
