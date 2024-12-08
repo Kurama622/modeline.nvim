@@ -342,7 +342,7 @@ function M.space()
 end
 function M.leftpar()
   return {
-    stl = [[%{(bufname() !=# '' && &bt != 'terminal' ? '(' : '')}]],
+    stl = [[%{(bufname() !=# '' && &bt != 'terminal' && &filetype != '' ? '(' : '')}]],
     name = 'leftpar',
     event = { 'BufEnter' },
     attr = {
@@ -352,7 +352,7 @@ function M.leftpar()
 end
 function M.rightpar()
   return {
-    stl = [[%{(bufname() !=# '' && &bt != 'terminal' ? ')' : '')}]],
+    stl = [[%{(bufname() !=# '' && &bt != 'terminal' && &filetype != '' ? ')' : '')}]],
     name = 'rightpar',
     event = { 'BufEnter' },
     attr = {
