@@ -345,9 +345,7 @@ function M.leftpar()
     stl = [[%{(bufname() !=# '' && &bt != 'terminal' && &filetype != '' ? '(' : '')}]],
     name = 'leftpar',
     event = { 'BufEnter' },
-    attr = {
-      bg = stl_bg,
-    },
+    attr = stl_attr('String'),
   }
 end
 function M.rightpar()
@@ -355,9 +353,7 @@ function M.rightpar()
     stl = [[%{(bufname() !=# '' && &bt != 'terminal' && &filetype != '' ? ')' : '')}]],
     name = 'rightpar',
     event = { 'BufEnter' },
-    attr = {
-      bg = stl_bg,
-    },
+    attr = stl_attr('String'),
   }
 end
 return M
