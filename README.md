@@ -37,7 +37,6 @@ implement emacs default modeline on neovim.
         p.progress(),
         p.lsp(),
         p.space(),
-        p.space(),
         p.pos(),
       })
     end,

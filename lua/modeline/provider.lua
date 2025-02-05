@@ -92,7 +92,7 @@ end
 
 function M.pos()
   return {
-    stl = '   %P  (L%l,C%c) ',
+    stl = '   %P  (L%l,C%c)',
     name = 'pos',
     event = { 'BufEnter' },
     attr = {
