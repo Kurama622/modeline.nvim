@@ -1,6 +1,6 @@
 # modeline.nvim
 
-![modeline](https://github.com/user-attachments/assets/2c6166fc-88d0-4d04-bd33-0246e2b48195)
+![modeline](https://github.com/user-attachments/assets/6f469213-7163-49f9-8444-2a85f93283c3)
 
 implement emacs default modeline on neovim.
 
@@ -43,5 +43,9 @@ implement emacs default modeline on neovim.
     end,
   },
 ```
+
+## Look Here
+
+The original author's repository: [https://github.com/nvimdev/modeline.nvim](https://github.com/nvimdev/modeline.nvim), please give it a star; I've just modified some styles and made it configurable.
 
 # GPL v3
