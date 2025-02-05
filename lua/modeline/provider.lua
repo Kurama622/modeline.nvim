@@ -137,9 +137,25 @@ function M.visual_selected()
   }
 end
 
+local function abbreviate_path()
+  local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':.')
+  local home = vim.fn.expand('~')
+  path = path:gsub('^' .. home, '~')
+
+  local parts = vim.split(path, '/', { plain = true })
+  if #parts < 4 then
+    return path
+  end
+
+  for i = 1, #parts - 1 do
+    parts[i] = parts[i]:sub(1, 1)
+  end
+  return table.concat(parts, '/')
+end
+
 function M.fileinfo()
   return {
-    stl = [[%{expand('%:~:.')}]],
+    stl = abbreviate_path,
     name = 'fileinfo',
     event = { 'BufEnter' },
     attr = {
