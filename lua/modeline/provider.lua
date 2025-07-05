@@ -243,9 +243,10 @@ end
 
 function M.gitinfo()
   local alias = { 'Head', 'Add', 'Change', 'Delete' }
+  local colors = { '#509987', '#6183bb', '#914c54' }
+
   for i = 2, 4 do
-    local color = api.nvim_get_hl(0, { name = 'Diff' .. alias[i] })
-    api.nvim_set_hl(0, 'ModeLineGit' .. alias[i], { fg = color.fg, bg = stl_bg })
+    api.nvim_set_hl(0, 'ModeLineGit' .. alias[i], { fg = colors[i - 1], bg = stl_bg })
   end
   return {
     stl = function()
