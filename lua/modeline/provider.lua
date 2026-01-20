@@ -199,45 +199,47 @@ function M.progress()
     end,
     name = 'LspProgress',
     event = { 'LspProgress' },
-    attr = stl_attr('Type'),
+    attr = stl_attr('number'),
   }
 end
 
 function M.lsp()
   return {
     stl = function(args)
-      local client = lsp.get_clients({ bufnr = 0 })[1]
-      if not client then
+      local clients = lsp.get_clients({ bufnr = 0 })
+      if #clients == 0 then
         return ''
       end
-      local msg = ''
+      local root_dir = 'single'
+      local client_names = vim
+        .iter(clients)
+        :map(function(client)
+          if args.event == 'LspDetach' and client.id == args.data.client_id then
+            return nil
+          end
+
+          if client.root_dir then
+            root_dir = client.root_dir
+          end
+          return ('%d_%s'):format(client.id, client.name)
+        end)
+        :totable()
+
+      local msg = ('[%s:%s]'):format(
+        root_dir ~= 'single' and fnamemodify(root_dir, ':t') or 'single',
+        table.concat(client_names, ',')
+      )
       if args.data and args.data.params then
         local val = args.data.params.value
-        if not val.message or val.kind == 'end' then
-          msg = ('[%s:%s]'):format(
-            client.name,
-            client.root_dir and fnamemodify(client.root_dir, ':t') or 'single'
-          )
-        else
-          msg = ('%s %s%s'):format(
-            val.title,
-            (val.message and val.message .. ' ' or ''),
-            (val.percentage and val.percentage .. '%' or '')
-          )
+        if val.message and val.kind ~= 'end' then
+          msg = ('%s %s'):format(val.title, (val.percentage and val.percentage .. '%' or ''))
         end
-      elseif args.event == 'BufEnter' or args.event == 'LspAttach' then
-        msg = ('[%s:%s]'):format(
-          client.name,
-          client.root_dir and fnamemodify(client.root_dir, ':t') or 'single'
-        )
-      elseif args.event == 'LspDetach' then
-        msg = ''
       end
-      return '   %-20s' .. msg
+      return ' %-20s' .. msg
     end,
     name = 'Lsp',
     event = { 'LspProgress', 'LspAttach', 'LspDetach', 'BufEnter' },
-    attr = stl_attr('Keyword'),
+    attr = stl_attr('number'),
   }
 end
 
