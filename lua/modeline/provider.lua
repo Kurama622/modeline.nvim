@@ -288,7 +288,10 @@ end
 
 local function diagnostic_info()
   return function()
-    if not vim.diagnostic.is_enabled({ bufnr = 0 }) or #lsp.get_clients({ bufnr = 0 }) == 0 then
+    if
+      not vim.diagnostic.is_enabled({ bufnr = 0 })
+      or (vim.fn.bufname() ~= 'Qfrun' and #lsp.get_clients({ bufnr = 0 }) == 0)
+    then
       return ''
     end
     local t = {}
